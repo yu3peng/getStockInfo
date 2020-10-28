@@ -20,16 +20,13 @@ def getHTMLText(url, code="utf-8"):  #获取HTML文本
 def getStockList(lst, stockURL):          #获取股票代码列表
     html = getHTMLText(stockURL, "GB2312")
     soup = BeautifulSoup(html, 'html.parser')
-    lst_raw = []
     a = soup.find_all('a')      #得到一个列表
     for i in a:
         try:
             href = i.attrs['href']       #股票代码都存放在href标签中
-            lst_raw.append("0" + re.findall(r"[S][HZ]\d{6}", href)[0][2:8])
+            lst.append("0" + re.findall(r"[S][HZ]\d{6}", href)[0][2:8])
         except:
-            continue
-            
-    lst = list(set(lst_raw))            
+            continue       
             
 def main():
     stock_list_url = 'https://hq.gucheng.com/gpdmylb.html'
