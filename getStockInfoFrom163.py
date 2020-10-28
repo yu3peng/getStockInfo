@@ -24,14 +24,16 @@ def getStockList(lst, stockURL):          #获取股票代码列表
     for i in a:
         try:
             href = i.attrs['href']       #股票代码都存放在href标签中
-            lst.append(re.findall(r"[S][HZ]\d{6}", href)[0])
+            prenandno = re.findall(r"[S][HZ]\d{6}", href)[0]
+            stockno = '0' + prenandno[2,7]
+            lst.append(stockno)
         except:
             continue
-
+                  
 def main():
     stock_list_url = 'https://hq.gucheng.com/gpdmylb.html'
-    stock_nos=[]
-    getStockList(stock_nos, stock_list_url)    
+    stock_list=[]
+    getStockList(stock_list, stock_list_url)    
     for stock_no in stock_nos:
 
         zycwzb = 'http://quotes.money.163.com/service/zycwzb_'+ stock_no +'.html?type=report'
@@ -47,7 +49,7 @@ def main():
         http = urllib3.PoolManager()
 
         if not os.path.exists(stock_no):
-            os.mkdirs('stocks/'+stock_no)
+            os.makedirs('stocks/'+stock_no)
 
         response = http.request('GET', zycwzb)
         with open('stocks/'+ stock_no + '/zycwzb.csv', 'wb') as f:
