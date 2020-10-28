@@ -33,7 +33,7 @@ def main():
     stock_nos=[]
     getStockList(stock_nos, stock_list_url)    
     for stock_no in stock_nos:
-        print("stock_no:" + stock_no + "\n")
+
         zycwzb = 'http://quotes.money.163.com/service/zycwzb_'+ stock_no +'.html?type=report'
         ylnl = 'http://quotes.money.163.com/service/zycwzb_'+ stock_no +'.html?type=report&part=ylnl'
         chnl = 'http://quotes.money.163.com/service/zycwzb_'+ stock_no +'.html?type=report&part=chnl'
@@ -47,7 +47,7 @@ def main():
         http = urllib3.PoolManager()
 
         if not os.path.exists(stock_no):
-            os.mkdir('stocks/'+stock_no)
+            os.mkdirs('stocks/'+stock_no)
 
         response = http.request('GET', zycwzb)
         with open('stocks/'+ stock_no + '/zycwzb.csv', 'wb') as f:
