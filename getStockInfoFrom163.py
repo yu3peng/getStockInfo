@@ -79,4 +79,4 @@ def main():
         print('完成'+stock_no)
         time.sleep(3)
 
-mian()        
+main()        
