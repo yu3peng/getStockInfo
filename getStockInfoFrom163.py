@@ -1,9 +1,11 @@
+import requests
+from bs4 import BeautifulSoup
 import urllib.request
 import re
 import urllib3
 import os
 import time
-import re     #引入正则表达式库，便于后续提取股票代码
+import re  
 
 def getHTMLText(url, code="utf-8"):  #获取HTML文本
     try:
