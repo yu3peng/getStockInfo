@@ -5,6 +5,15 @@ import os
 import time
 import re     #引入正则表达式库，便于后续提取股票代码
 
+def getHTMLText(url, code="utf-8"):  #获取HTML文本
+    try:
+        r = requests.get(url)
+        r.raise_for_status()
+        r.encoding = code
+        return r.text
+    except:
+        return ""
+
 # 获取股票代码列表
 def getStockList(lst, stockURL):          #获取股票代码列表
     html = getHTMLText(stockURL, "GB2312")
