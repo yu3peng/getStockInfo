@@ -17,8 +17,8 @@ def getHTMLText(url, code="utf-8"):  #获取HTML文本
         return ""
 
 # 获取股票代码列表
-def getStockList(stock_list, stock_list_url):          #获取股票代码列表
-    html = getHTMLText(stock_list_url, "GB2312")
+def getStockList(list, list_url):          #获取股票代码列表
+    html = getHTMLText(list_url, "GB2312")
     soup = BeautifulSoup(html, 'html.parser') 
     a = soup.find_all('a')      #得到一个列表
     for i in a:
@@ -26,7 +26,7 @@ def getStockList(stock_list, stock_list_url):          #获取股票代码列表
             href = i.attrs['href']       #股票代码都存放在href标签中
             prenandno = re.findall(r"[S][HZ]\d{6}", href)[0]
             stockno = '0' + prenandno[2,7]
-            stock_list.append(stockno)
+            list.append(stockno)
         except:
             continue
                   
