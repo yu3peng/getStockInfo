@@ -34,8 +34,10 @@ def getStockList(lst, stockURL):          #获取股票代码列表
 def main():
     stock_list_url = 'https://hq.gucheng.com/gpdmylb.html'
     stock_nos=[]
+    stock_nos_qc=[]
     getStockList(stock_nos, stock_list_url)
-    for stock_no in stock_nos:
+    stock_nos_qc=list(set(stock_nos))
+    for stock_no in stock_nos_qc:
         code = 'http://quotes.money.163.com/service/chddata.html?code=' + stock_no + '&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'
         http = urllib3.PoolManager()
         if not os.path.exists(stock_no):
