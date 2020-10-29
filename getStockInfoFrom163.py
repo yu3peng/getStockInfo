@@ -39,12 +39,12 @@ def getStockList(stockList):
 def getStockInfo(stockNO):   
     try:
         # TCLOSE收盘价 ;HIGH最高价;LOW最低价;TOPEN开盘价;LCLOSE前收盘价;CHG涨跌额;PCHG涨跌幅;TURNOVER换手率;VOTURNOVER成交量;VATURNOVER成交金额;TCAP总市值;MCAP流通市值
-        code = 'http://quotes.money.163.com/service/chddata.html?code=' + stockNO + '&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'
+        allInfo = 'http://quotes.money.163.com/service/chddata.html?code=' + stockNO + '&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'
         http = urllib3.PoolManager()
         if not os.path.exists(stockNO):
             os.makedirs('stocks/'+stockNO)
-        response = http.request('GET',code)
-        with open('stocks/'+ stockNO + '/info.csv', 'wb', encoding='utf-8') as f:
+        response = http.request('GET', allInfo)
+        with open('stocks/'+ stockNO + '/allInfo.csv', 'wb') as f:
             f.write(response.data)
         response.release_conn()
         print('完成'+stockNO)
