@@ -57,7 +57,7 @@ def getAllStockInfo(stockList):
     count = 0
     for stockNO in stockList:
         try:
-            p.apply_async(getStockInfo, args=(stockNO))
+            p.apply_async(getStockInfo, args=(stockNO,))
             count = count + 1
             print("\r爬取成功，当前进度: {:.2f}%".format(count*100/len(stockList)),end="")
         except:
