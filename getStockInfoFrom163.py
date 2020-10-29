@@ -69,5 +69,5 @@ def main():
     getStockList(stockList)
     getAllStockInfo(stockList)
     time_cost = time.perf_counter() - start
-    print("爬取成功，共用时：" + time_cost)
+    print("爬取成功,共用时：{:.2f}s".format(time_cost))
 main()
