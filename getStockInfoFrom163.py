@@ -43,7 +43,7 @@ def getStockInfo(stockNO)：
     if not os.path.exists(stockNO):
         os.makedirs('stocks/'+stockNO)
     response = http.request('GET',code)
-    with open('stocks/'+ stockNO + '/code.csv', 'wb') as f:
+    with open('stocks/'+ stockNO + '/info.csv', 'wb') as f:
         f.write(response.data)
     response.release_conn()         
            
@@ -61,16 +61,13 @@ def getAllStockInfo(stockList)：
             print("\r爬取失败，当前进度: {:.2f}%".format(count*100/len(lst)),end="")
             continue
     p.close()
-    p.join()            
-            
+    p.join()                        
             
 def main():
     stockList=[]
     start = time.perf_counter()
     getStockList(stockList)
     getAllStockInfo(stockList)
-        
-        
     time_cost = time.perf_counter() - start
     print("爬取成功，共用时：" time_cost)
 main()
