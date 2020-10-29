@@ -9,7 +9,7 @@ import multiprocessing
 from multiprocessing import Pool
 
 # 获取HTML文本
-def getHTMLText(url, code="utf-8"):  
+def getHTMLText(url, code="utf-8"):
     try:
         r = requests.get(url)
         r.raise_for_status()
@@ -36,7 +36,7 @@ def getStockList(stockList):
             continue
 
 # 获取股票信息
-def getStockInfo(stockNO)：            
+def getStockInfo(stockNO):         
     # TCLOSE收盘价 ;HIGH最高价;LOW最低价;TOPEN开盘价;LCLOSE前收盘价;CHG涨跌额;PCHG涨跌幅;TURNOVER换手率;VOTURNOVER成交量;VATURNOVER成交金额;TCAP总市值;MCAP流通市值
     code = 'http://quotes.money.163.com/service/chddata.html?code=' + stockNO + '&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'
     http = urllib3.PoolManager()
@@ -48,7 +48,7 @@ def getStockInfo(stockNO)：
     response.release_conn()         
            
 # 获取所有股票信息
-def getAllStockInfo(stockList)：
+def getAllStockInfo(stockList):
     p = Pool(multiprocessing.cpu_count())
     count = 0
     for stockNO in stockList:
