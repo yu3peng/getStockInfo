@@ -44,7 +44,7 @@ def getStockInfo(stockNO):
         if not os.path.exists(stockNO):
             os.makedirs('stocks/'+stockNO)
         response = http.request('GET',code)
-        with open('stocks/'+ stockNO + '/info.csv', 'wb') as f:
+        with open('stocks/'+ stockNO + '/info.csv', 'wb', encoding='utf-8') as f:
             f.write(response.data)
         response.release_conn()
         print('完成'+stockNO)
