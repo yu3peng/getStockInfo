@@ -5,8 +5,6 @@ import re
 import urllib3
 import os
 import time
-import multiprocessing
-from multiprocessing import Pool
 
 # 获取HTML文本
 def getHTMLText(url, code="utf-8"):
@@ -53,14 +51,16 @@ def getStockInfo(stockNO):
         
 # 多线程异步获取所有股票信息
 def getAllStockInfo(stockList):
-    p = Pool(multiprocessing.cpu_count())
+    count = 0
     for stockNO in stockList:
         try:
-            p.apply_async(getStockInfo, args=(stockNO,))
+            getStockInfo(stockNO)
+            count = count + 1
+            print("\r爬取成功，当前进度: {:.2f}%".format(count*100/len(stockList)),end="")            
         except:
-            continue
-    p.close()
-    p.join()                        
+            count = count + 1
+            print("\r爬取失败，当前进度: {:.2f}%".format(count*100/len(stockList)),end="")
+            continue                      
             
 def main():
     stockList=[]
