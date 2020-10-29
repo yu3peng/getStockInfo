@@ -51,18 +51,13 @@ def getStockInfo(stockNO):
     except:
         raise
         
-# 获取所有股票信息
+# 多线程异步获取所有股票信息
 def getAllStockInfo(stockList):
     p = Pool(multiprocessing.cpu_count())
-    count = 0
     for stockNO in stockList:
         try:
             p.apply_async(getStockInfo, args=(stockNO,))
-            count = count + 1
-            print("\r爬取成功，当前进度: {:.2f}%".format(count*100/len(stockList)),end="")
         except:
-            count = count + 1
-            print("\r爬取失败，当前进度: {:.2f}%".format(count*100/len(stockList)),end="")
             continue
     p.close()
     p.join()                        
