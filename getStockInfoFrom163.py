@@ -31,7 +31,7 @@ def getStockList(stockList):
             # re.findall(r"[S][HZ]\d{6}", href)[0]，从gucheng网获取到的股票代码为SH000001格式，需要转换为163上需要的格式0000001
             stockNO = "0" + re.findall(r"[S][HZ]\d{6}", href)[0][2:8]
             if stockNO not in stockList:
-                stockList.append("0" + re.findall(r"[S][HZ]\d{6}", href)[0][2:8])
+                stockList.append(stockNO)
         except:
             continue
 
