@@ -5,6 +5,8 @@ import re
 import urllib3
 import os
 import time
+import multiprocessing
+from multiprocessing import Pool
 
 # 获取HTML文本
 def getHTMLText(url, code="utf-8"):  
@@ -30,14 +32,12 @@ def getStockList(stockList):
             stockList.append("0" + re.findall(r"[S][HZ]\d{6}", href)[0][2:8])
         except:
             continue       
+    return sorted(set(stockList), key = stockList.index)
             
 def main():
     stockList=[]
-    # 去重使用
-    stockListQC=[]
     getStockList(stockList)
-    stockListQC=list(set(stockList))
-    for stockNO in stockListQC:
+    for stockNO in stockList:
         # TCLOSE收盘价 ;HIGH最高价;LOW最低价;TOPEN开盘价;LCLOSE前收盘价;CHG涨跌额;PCHG涨跌幅;TURNOVER换手率;VOTURNOVER成交量;VATURNOVER成交金额;TCAP总市值;MCAP流通市值
         code = 'http://quotes.money.163.com/service/chddata.html?code=' + stockNO + '&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'
         http = urllib3.PoolManager()
