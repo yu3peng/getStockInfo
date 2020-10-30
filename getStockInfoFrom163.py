@@ -45,7 +45,6 @@ def getStockInfo(stockNO):
         with open('stocks/'+ stockNO + '/allInfo.csv', 'wb') as f:
             f.write(response.data)
         response.release_conn()
-        time.sleep(5)
     except:
         raise
         
