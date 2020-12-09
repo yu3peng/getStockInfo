@@ -6,7 +6,13 @@ import re
 import urllib3
 import os
 import time
+import sys
+import time
+from sqlalchemy.types import NVARCHAR
+from sqlalchemy import inspect
 from sqlalchemy import create_engine,Table,Column,Integer,String,MetaData,ForeignKey
+import datetime
+
 
 # 使用环境变量获得数据库。兼容开发模式可docker模式。
 MYSQL_HOST = os.environ.get('MYSQL_HOST') if (os.environ.get('MYSQL_HOST') != None) else "mariadb"
@@ -20,7 +26,7 @@ print("MYSQL_CONN_URL :", MYSQL_CONN_URL)
 
 # 创建新数据库。
 def create_new_database():
-    with MySQLdb.connect(mariadb, root, mariadb, "mysql", charset="utf8") as db:
+    with MySQLdb.connect(MYSQL_HOST, MYSQL_USER, MYSQL_PWD, "mysql", charset="utf8") as db:
         try:
             create_sql = " CREATE DATABASE IF NOT EXISTS %s CHARACTER SET utf8 COLLATE utf8_general_ci " % MYSQL_DB
             print(create_sql)
@@ -59,6 +65,8 @@ def create_new_database():
             except  Exception as e:
                 print("################## ADD PRIMARY KEY ERROR :", e)
                 
+##################################################################################################################
+
 # 获取HTML文本
 def getHTMLText(url, code="utf-8"):
     try:
@@ -127,4 +135,11 @@ if __name__ == '__main__':
         # 检查数据库失败，
         create_new_database()
 
+    stockList=[]
+    start = time.perf_counter()
+    getStockList(stockList)
+    getAllStockInfo(stockList)
+    time_cost = time.perf_counter() - start
+    print("爬取成功,共用时：{:.2f}s".format(time_cost))
+    
 
