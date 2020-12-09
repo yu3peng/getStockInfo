@@ -8,11 +8,11 @@ import os
 import time
 import sys
 import time
+import datetime
+import pandas as pd
 from sqlalchemy.types import NVARCHAR
 from sqlalchemy import inspect
 from sqlalchemy import create_engine,Table,Column,Integer,String,MetaData,ForeignKey
-import datetime
-
 
 # 使用环境变量获得数据库。兼容开发模式可docker模式。
 MYSQL_HOST = os.environ.get('MYSQL_HOST') if (os.environ.get('MYSQL_HOST') != None) else "mariadb"
@@ -103,7 +103,8 @@ def getStockInfo(stockNO):
         if not os.path.exists(stockNO):
             os.makedirs('stocks/'+stockNO)
         response = http.request('GET', allInfo)
-        insert_db(MYSQL_DB, response.data, stockNO, True, "`code`")
+        data = pd.DataFrame.from_dict(response.json())
+        insert_db(MYSQL_DB, data, stockNO, True, "`code`")
         response.release_conn()
     except:
         raise
@@ -115,10 +116,10 @@ def getAllStockInfo(stockList):
         try:
             getStockInfo(stockNO)
             count = count + 1
-            print("\r爬取成功，当前进度: {:.2f}%".format(count*100/len(stockList)),end="")            
+            print("\rCrawl is successful, current progress: {:.2f}%".format(count*100/len(stockList)),end="")            
         except:
             count = count + 1
-            print("\r爬取失败，当前进度: {:.2f}%".format(count*100/len(stockList)),end="")
+            print("\rCrawl failed, current progress: {:.2f}%".format(count*100/len(stockList)),end="")
             continue                      
 
 # main函数入口
@@ -126,7 +127,7 @@ if __name__ == '__main__':
 
     # 检查，如果执行 select 1 失败，说明数据库不存在，然后创建一个新的数据库。
     try:
-        with MySQLdb.connect(mariadb, root, mariadb, all_stock_info,
+        with MySQLdb.connect(MYSQL_HOST, MYSQL_USER, MYSQL_PWD, MYSQL_DB,
                              charset="utf8") as db:
             db.autocommit(on=True)
             db.cursor().execute(" select 1 ")
@@ -140,6 +141,6 @@ if __name__ == '__main__':
     getStockList(stockList)
     getAllStockInfo(stockList)
     time_cost = time.perf_counter() - start
-    print("爬取成功,共用时：{:.2f}s".format(time_cost))
+    print("Crawl is successful, time-consuming：{:.2f}s".format(time_cost))
     
 
