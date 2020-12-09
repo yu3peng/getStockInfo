@@ -20,7 +20,7 @@ from sqlalchemy import create_engine,Table,Column,Integer,String,MetaData,Foreig
 MYSQL_HOST = os.environ.get('MYSQL_HOST') if (os.environ.get('MYSQL_HOST') != None) else "mariadb"
 MYSQL_USER = os.environ.get('MYSQL_USER') if (os.environ.get('MYSQL_USER') != None) else "root"
 MYSQL_PWD = os.environ.get('MYSQL_PWD') if (os.environ.get('MYSQL_PWD') != None) else "mariadb"
-MYSQL_DB = os.environ.get('MYSQL_DB') if (os.environ.get('MYSQL_DB') != None) else "stock_info"
+MYSQL_DB = os.environ.get('MYSQL_DB') if (os.environ.get('MYSQL_DB') != None) else "stocks_info"
 
 print("MYSQL_HOST :", MYSQL_HOST, ",MYSQL_USER :", MYSQL_USER, ",MYSQL_DB :", MYSQL_DB)
 MYSQL_CONN_URL = "mysql+mysqldb://" + MYSQL_USER + ":" + MYSQL_PWD + "@" + MYSQL_HOST + ":3306/" + MYSQL_DB + "?charset=utf8"
@@ -102,19 +102,20 @@ def getStockInfo(stockNO):
         # TCLOSE收盘价 ;HIGH最高价;LOW最低价;TOPEN开盘价;LCLOSE前收盘价;CHG涨跌额;PCHG涨跌幅;TURNOVER换手率;VOTURNOVER成交量;VATURNOVER成交金额;TCAP总市值;MCAP流通市值
         allInfo = 'http://quotes.money.163.com/service/chddata.html?code=' + stockNO + '&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'
         http = urllib3.PoolManager()
-        if not os.path.exists(stockNO):
-            os.makedirs('stocks/'+stockNO)
+        if not os.path.exists('stocks_info'):
+            os.makedirs('stocks_info')
         response = http.request('GET', allInfo)
-        with open('stocks/'+ stockNO + '.csv', 'wb') as f:
+        with open('stocks_info/'+ stockNO + '.csv', 'wb') as f:
             f.write(response.data)
         response.release_conn()
         
         tmp_lst = [] 
-        with open('stocks/'+ stockNO + '.csv', 'r') as f:
+        with open('stocks_info/'+ stockNO + '.csv', 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 tmp_lst.append(row)
-        df = pd.DataFrame(tmp_lst[1:], columns=tmp_lst[0]) 
+        df = pd.DataFrame(tmp_lst[1:], columns=tmp_lst[0])
+        print(df)
         insert_db(MYSQL_DB, df, stockNO, True, "`code`")
 
     except:
