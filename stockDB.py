@@ -35,14 +35,14 @@ def create_new_database():
         except Exception as e:
             print("error CREATE DATABASE :", e)
 
- def engine_to_db(to_db):
+def engine_to_db(to_db):
     MYSQL_CONN_URL_NEW = "mysql+mysqldb://" + MYSQL_USER + ":" + MYSQL_PWD + "@" + MYSQL_HOST + ":3306/" + to_db + "?charset=utf8"
     engine = create_engine(
         MYSQL_CONN_URL_NEW,
         encoding='utf8', convert_unicode=True)
     return engine           
             
- def insert_db(to_db, data, table_name, write_index, primary_keys):
+def insert_db(to_db, data, table_name, write_index, primary_keys):
     # 定义engine
     engine_mysql = engine_to_db(to_db)
     # 使用 http://docs.sqlalchemy.org/en/latest/core/reflection.html
