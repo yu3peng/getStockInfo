@@ -10,6 +10,8 @@ import sys
 import time
 import datetime
 import pandas as pd
+import csv
+from pandas.core.frame import DataFrame
 from sqlalchemy.types import NVARCHAR
 from sqlalchemy import inspect
 from sqlalchemy import create_engine,Table,Column,Integer,String,MetaData,ForeignKey
@@ -103,9 +105,18 @@ def getStockInfo(stockNO):
         if not os.path.exists(stockNO):
             os.makedirs('stocks/'+stockNO)
         response = http.request('GET', allInfo)
-        data = pd.DataFrame.from_dict(response.json())
-        insert_db(MYSQL_DB, data, stockNO, True, "`code`")
+        with open('stocks/'+ stockNO + '/allInfo.csv', 'wb') as f:
+            f.write(response.data)
         response.release_conn()
+        
+        tmp_lst = [] 
+        with open('filename_path.csv', 'r') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                tmp_lst.append(row)
+        df = pd.DataFrame(tmp_lst[1:], columns=tmp_lst[0]) 
+        insert_db(MYSQL_DB, df, stockNO, True, "`code`")
+
     except:
         raise
         
