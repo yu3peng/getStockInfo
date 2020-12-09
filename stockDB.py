@@ -8,17 +8,57 @@ import os
 import time
 from sqlalchemy import create_engine,Table,Column,Integer,String,MetaData,ForeignKey
 
+# 使用环境变量获得数据库。兼容开发模式可docker模式。
+MYSQL_HOST = os.environ.get('MYSQL_HOST') if (os.environ.get('MYSQL_HOST') != None) else "mariadb"
+MYSQL_USER = os.environ.get('MYSQL_USER') if (os.environ.get('MYSQL_USER') != None) else "root"
+MYSQL_PWD = os.environ.get('MYSQL_PWD') if (os.environ.get('MYSQL_PWD') != None) else "mariadb"
+MYSQL_DB = os.environ.get('MYSQL_DB') if (os.environ.get('MYSQL_DB') != None) else "stock_info"
+
+print("MYSQL_HOST :", MYSQL_HOST, ",MYSQL_USER :", MYSQL_USER, ",MYSQL_DB :", MYSQL_DB)
+MYSQL_CONN_URL = "mysql+mysqldb://" + MYSQL_USER + ":" + MYSQL_PWD + "@" + MYSQL_HOST + ":3306/" + MYSQL_DB + "?charset=utf8"
+print("MYSQL_CONN_URL :", MYSQL_CONN_URL)
+
 # 创建新数据库。
 def create_new_database():
     with MySQLdb.connect(mariadb, root, mariadb, "mysql", charset="utf8") as db:
         try:
-            create_sql = " CREATE DATABASE IF NOT EXISTS %s CHARACTER SET utf8 COLLATE utf8_general_ci " % all_stock_info
+            create_sql = " CREATE DATABASE IF NOT EXISTS %s CHARACTER SET utf8 COLLATE utf8_general_ci " % MYSQL_DB
             print(create_sql)
             db.autocommit(on=True)
             db.cursor().execute(create_sql)
         except Exception as e:
             print("error CREATE DATABASE :", e)
 
+ def engine_to_db(to_db):
+    MYSQL_CONN_URL_NEW = "mysql+mysqldb://" + MYSQL_USER + ":" + MYSQL_PWD + "@" + MYSQL_HOST + ":3306/" + to_db + "?charset=utf8"
+    engine = create_engine(
+        MYSQL_CONN_URL_NEW,
+        encoding='utf8', convert_unicode=True)
+    return engine           
+            
+ def insert_db(to_db, data, table_name, write_index, primary_keys):
+    # 定义engine
+    engine_mysql = engine_to_db(to_db)
+    # 使用 http://docs.sqlalchemy.org/en/latest/core/reflection.html
+    # 使用检查检查数据库表是否有主键。
+    insp = inspect(engine_mysql)
+    col_name_list = data.columns.tolist()
+    # 如果有索引，把索引增加到varchar上面。
+    if write_index:
+        # 插入到第一个位置：
+        col_name_list.insert(0, data.index.name)
+    print(col_name_list)
+    data.to_sql(name=table_name, con=engine_mysql, schema=to_db, if_exists='append',
+                dtype={col_name: NVARCHAR(length=255) for col_name in col_name_list}, index=write_index)
+    # 判断是否存在主键
+    if insp.get_primary_keys(table_name) == []:
+        with engine_mysql.connect() as con:
+            # 执行数据库插入数据。
+            try:
+                con.execute('ALTER TABLE `%s` ADD PRIMARY KEY (%s);' % (table_name, primary_keys))
+            except  Exception as e:
+                print("################## ADD PRIMARY KEY ERROR :", e)
+                
 # 获取HTML文本
 def getHTMLText(url, code="utf-8"):
     try:
@@ -55,8 +95,7 @@ def getStockInfo(stockNO):
         if not os.path.exists(stockNO):
             os.makedirs('stocks/'+stockNO)
         response = http.request('GET', allInfo)
-        with open('stocks/'+ stockNO + '/allInfo.csv', 'wb') as f:
-            f.write(response.data)
+        insert_db(MYSQL_DB, response.data, stockNO, True, "`code`")
         response.release_conn()
     except:
         raise
@@ -88,27 +127,4 @@ if __name__ == '__main__':
         # 检查数据库失败，
         create_new_database()
 
-    engine=create_engine("mysql+mysqldb://root:mariadb@mariadb:3306/all_stock_info?charset=utf8",  encoding='utf8', convert_unicode=True)
-    metadata=MetaData(engine)
 
-
-
-
-
-
-
-
-
-
-user=Table('user',metadata,
-            Column('id',Integer,primary_key=True),
-            Column('name',String(20)),
-            Column('fullname',String(40)),
-            )
-address_table = Table('address', metadata,
-            Column('id', Integer, primary_key=True),
-            Column('user_id', None, ForeignKey('user.id')),
-            Column('email', String(128), nullable=False)
-            )
-
-metadata.create_all()
