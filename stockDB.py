@@ -105,12 +105,12 @@ def getStockInfo(stockNO):
         if not os.path.exists(stockNO):
             os.makedirs('stocks/'+stockNO)
         response = http.request('GET', allInfo)
-        with open('stocks/'+ stockNO + '/allInfo.csv', 'wb') as f:
+        with open('stocks/'+ stockNO + '.csv', 'wb') as f:
             f.write(response.data)
         response.release_conn()
         
         tmp_lst = [] 
-        with open('filename_path.csv', 'r') as f:
+        with open('stocks/'+ stockNO + '.csv', 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 tmp_lst.append(row)
